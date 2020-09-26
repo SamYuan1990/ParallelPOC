@@ -34,6 +34,10 @@ func (n *Node) InputAdd() {
 	n.Input = n.Input + 1
 }
 
+func (n *Node) ReduceInput() {
+	n.Input--
+}
+
 func (n *Node) AddReadKey(input *Node) {
 	if n.RKeyVersion <= input.RKeyVersion {
 		//right
@@ -140,4 +144,46 @@ func TreeMaking(current *ToBeProcessQueue, txs []*Node) *ToBeProcessQueue {
 		}
 	}
 	return current
+}
+
+func Process(tbpq *ToBeProcessQueue) []*Node {
+	rs := make([]*Node, 0)
+	currentTxs := tbpq.GetTop().Val
+	for _, cur := range currentTxs {
+		// middle, right
+		ns := &NodeStack{
+			Stack: make([]*Node, 10),
+			Size:  0,
+		}
+		ns.Push(cur)
+		for ns.Size > 0 {
+			cur = ns.Pop()
+			rs = append(rs, cur)
+			if cur.Right != nil {
+				if cur.Right.Input > 0 {
+					cur.Right.ReduceInput()
+					break
+				}
+				ns.Push(cur.Right)
+			}
+		}
+	}
+	//dequeue
+	return rs
+}
+
+type NodeStack struct {
+	Stack []*Node
+	Size  int
+}
+
+func (ns *NodeStack) Pop() *Node {
+	tmp := ns.Stack[ns.Size-1]
+	ns.Size--
+	return tmp
+}
+
+func (ns *NodeStack) Push(input *Node) {
+	ns.Stack[ns.Size] = input
+	ns.Size++
 }
