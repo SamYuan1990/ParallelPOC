@@ -92,10 +92,6 @@ var _ = Describe("Main", func() {
 		})
 	})
 	/*
-		Context("w and w can parallel", func() {
-			// two processors
-		})
-
 		Context("u break parallel", func() {
 			// two processors
 		})*/
