@@ -28,6 +28,7 @@ type Node struct {
 	Left        *Node
 	Right       *Node
 	UFlag       bool
+	Processed   bool
 }
 
 func (n *Node) InputAdd() {
@@ -159,6 +160,7 @@ func Process(tbpq *ToBeProcessQueue) []*Node {
 		ns.Push(cur)
 		for ns.Size > 0 {
 			cur = ns.Pop()
+			cur.Processed = true
 			rs = append(rs, cur)
 			if cur.Right != nil {
 				if cur.Right.Input > 0 {
