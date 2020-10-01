@@ -1,8 +1,10 @@
 package pipelinepoc
 
-func Process(tbpq *ToBeProcessQueue) []*Node {
+type Processor struct {
+}
+
+func (p *Processor) Process(currentTxs []*Node) []*Node {
 	rs := make([]*Node, 0)
-	currentTxs := tbpq.GetTop().Val
 	for _, cur := range currentTxs { //paralle， replace by channel
 		// go thread logic
 		// middle, right
