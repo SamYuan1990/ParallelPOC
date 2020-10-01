@@ -121,65 +121,6 @@ func (tbpq *ToBeProcessQueue) AppendU(n *Node) *ToBeProcessQueue {
 	return tbpq
 }
 
-// Dequeue // a,b,c
-
-func TreeMaking(current *ToBeProcessQueue, txs []*Node) *ToBeProcessQueue {
-	for _, v := range txs {
-		find := false
-		if v.UFlag {
-			current = current.AppendU(v)
-			continue
-		}
-		for _, vc := range current.GetButtom().Val {
-			if vc.WKey == v.WKey && vc.WKey != "" {
-				vc.AddWriteKey(v)
-				find = true
-			}
-			if (vc.WKey == v.RKey || vc.RKey == v.RKey) && v.RKey != "" {
-				vc.AddReadKey(v)
-				v.InputAdd()
-			}
-		}
-		if !find {
-			current = current.Append(v)
-		}
-	}
-	return current
-}
-
-func Process(tbpq *ToBeProcessQueue) []*Node {
-	rs := make([]*Node, 0)
-	currentTxs := tbpq.GetTop().Val
-	for _, cur := range currentTxs { //paralle， replace by channel
-		// go thread logic
-		// middle, right
-		ns := &NodeStack{
-			Stack: make([]*Node, 10),
-			Size:  0,
-		}
-		ns.Push(cur)
-		for ns.Size > 0 {
-			cur = ns.Pop()
-			cur.Processed = true
-			rs = append(rs, cur)
-			if cur.Right != nil {
-				if cur.Right.Input > 0 {
-					cur.Right.ReduceInput()
-					//append
-					/*
-						currentTxs.append cur.Right.Right
-						currentTxs.append cur.Right.Right
-					*/
-					break
-				}
-				ns.Push(cur.Right)
-			}
-		}
-	}
-	//todo:dequeue
-	return rs
-}
-
 type NodeStack struct {
 	Stack []*Node
 	Size  int
