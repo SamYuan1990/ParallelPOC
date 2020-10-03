@@ -1,8 +1,12 @@
 package pipelinepoc
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type Processor struct {
+	Name string
 }
 
 func (p *Processor) Process(ch chan *Node) []*Node {
@@ -26,6 +30,13 @@ func (p *Processor) Process(ch chan *Node) []*Node {
 		for ns.Size > 0 {
 			cur = ns.Pop()
 			cur.Processed = true
+			fmt.Println(p.Name, " Process ", cur)
+			if cur.RKey != "" {
+				time.Sleep(time.Second * 3)
+			}
+			if cur.WKey != "" {
+				time.Sleep(time.Second * 5)
+			}
 			rs = append(rs, cur)
 			if cur.Right != nil {
 				if cur.Right.Input > 0 {

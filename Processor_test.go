@@ -63,7 +63,7 @@ var _ = Describe("Main", func() {
 			consumer.IntoChan(ch)
 			Processor := &pipelinepoc.Processor{}
 			verify := Processor.Process(ch)
-			close(ch)
+			defer close(ch)
 			Expect("a").Should(Equal(verify[0].WKey))
 			Expect(0).Should(Equal(verify[0].WKeyVersion))
 			Expect("a").Should(Equal(verify[1].WKey))
@@ -89,7 +89,7 @@ var _ = Describe("Main", func() {
 			consumer.IntoChan(ch)
 			Processor := &pipelinepoc.Processor{}
 			verify := Processor.Process(ch)
-			close(ch)
+			defer close(ch)
 			Expect("a").Should(Equal(verify[0].WKey))
 			Expect(0).Should(Equal(verify[0].WKeyVersion))
 			Expect("a").Should(Equal(verify[1].WKey))
