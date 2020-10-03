@@ -59,8 +59,11 @@ var _ = Describe("Main", func() {
 				Nodes: make([]*pipelinepoc.Node, 0),
 			}
 			consumer.TreeMaking(Tx)
+			ch := make(chan *pipelinepoc.Node, 10)
+			consumer.IntoChan(ch)
 			Processor := &pipelinepoc.Processor{}
-			verify := Processor.Process(consumer.Nodes)
+			verify := Processor.Process(ch)
+			close(ch)
 			Expect("a").Should(Equal(verify[0].WKey))
 			Expect(0).Should(Equal(verify[0].WKeyVersion))
 			Expect("a").Should(Equal(verify[1].WKey))
@@ -82,8 +85,11 @@ var _ = Describe("Main", func() {
 				Nodes: make([]*pipelinepoc.Node, 0),
 			}
 			consumer.TreeMaking(Tx)
+			ch := make(chan *pipelinepoc.Node, 10)
+			consumer.IntoChan(ch)
 			Processor := &pipelinepoc.Processor{}
-			verify := Processor.Process(consumer.Nodes)
+			verify := Processor.Process(ch)
+			close(ch)
 			Expect("a").Should(Equal(verify[0].WKey))
 			Expect(0).Should(Equal(verify[0].WKeyVersion))
 			Expect("a").Should(Equal(verify[1].WKey))

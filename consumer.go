@@ -32,3 +32,10 @@ func (c *Consumer) TreeMaking(txs []*Node) {
 		}
 	}
 }
+
+func (c *Consumer) IntoChan(ch chan *Node) {
+	for _, v := range c.Nodes {
+		ch <- v
+	}
+	ch <- &Node{FinalFlag: true}
+}

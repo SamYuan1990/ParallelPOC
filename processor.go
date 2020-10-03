@@ -1,11 +1,21 @@
 package pipelinepoc
 
+import "fmt"
+
 type Processor struct {
 }
 
-func (p *Processor) Process(currentTxs []*Node) []*Node {
+func (p *Processor) Process(ch chan *Node) []*Node {
 	rs := make([]*Node, 0)
-	for _, cur := range currentTxs { //paralle， replace by channel
+	fmt.Println("Start Process")
+	for {
+		cur, ok := <-ch //paralle， replace by channel
+		if !ok {
+			break
+		}
+		if cur.FinalFlag {
+			break
+		}
 		// go thread logic
 		// middle, right
 		ns := &NodeStack{

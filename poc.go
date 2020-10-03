@@ -29,6 +29,7 @@ type Node struct {
 	Right       *Node
 	UFlag       bool
 	Processed   bool
+	FinalFlag   bool
 }
 
 func (n *Node) InputAdd() {
