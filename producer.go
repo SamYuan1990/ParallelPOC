@@ -38,5 +38,5 @@ func (c *Producer) IntoChan(ch chan *Node) {
 		ch <- v
 	}
 	ch <- &Node{FinalFlag: true}
-	close(ch)
+	//close(ch)
 }

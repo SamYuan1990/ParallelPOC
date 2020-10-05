@@ -41,17 +41,21 @@ func (p *Processor) Process(ch chan *Node, done chan bool) []*Node {
 			if cur.Right != nil {
 				if cur.Right.Input > 0 {
 					cur.Right.ReduceInput()
-					//append
-					/*
-						currentTxs.append cur.Right.Right
-						currentTxs.append cur.Right.Right
-					*/
+					if cur.Right.Right != nil {
+						fmt.Println(p.Name, " move RR ", cur.Right.Right)
+						ch <- cur.Right.Right
+					}
+					if cur.Right.Left != nil {
+						fmt.Println("move RL")
+						ch <- cur.Right.Left
+					}
 					break
 				}
 				ns.Push(cur.Right)
 			}
 		}
 	}
+	fmt.Println("exit ", p.Name)
 	done <- true
 	//todo:dequeue
 	return rs

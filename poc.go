@@ -77,27 +77,27 @@ func (n *Node) AddWriteKey(input *Node) {
 }
 
 type QueueNode struct {
-	Val  []*Node
+	Val  chan *Node
 	Next *QueueNode
 }
 
-type ToBeProcessQueue struct {
+type ToBeProcessChan struct {
 	Head   *QueueNode
 	Buttom *QueueNode
 	// [a, b, c][a,b,c,u][a,b,c]
 }
 
-func (tbpq *ToBeProcessQueue) GetTop() *QueueNode {
+func (tbpq *ToBeProcessChan) GetTop() *QueueNode {
 	return tbpq.Head
 }
 
-func (tbpq *ToBeProcessQueue) GetButtom() *QueueNode {
+func (tbpq *ToBeProcessChan) GetButtom() *QueueNode {
 	return tbpq.Buttom
 }
 
-func (tbpq *ToBeProcessQueue) Init() *ToBeProcessQueue {
+func (tbpq *ToBeProcessChan) Init() *ToBeProcessChan {
 	tbpq.Buttom = &QueueNode{
-		Val:  make([]*Node, 0),
+		Val:  make(chan *Node, 0),
 		Next: nil,
 	}
 	tbpq.Head = tbpq.Buttom
@@ -105,20 +105,20 @@ func (tbpq *ToBeProcessQueue) Init() *ToBeProcessQueue {
 }
 
 // EnQueue // a,b,c,u
-func (tbpq *ToBeProcessQueue) Append(n *Node) *ToBeProcessQueue {
-	tbpq.Buttom.Val = append(tbpq.Buttom.Val, n)
+func (tbpq *ToBeProcessChan) Append(n *Node) *ToBeProcessChan {
+	tbpq.Buttom.Val <- n
 	return tbpq
 }
 
 // EnQueue // a,b,c,u
-func (tbpq *ToBeProcessQueue) AppendU(n *Node) *ToBeProcessQueue {
-	tbpq.Buttom.Val = append(tbpq.Buttom.Val, n)
+func (tbpq *ToBeProcessChan) AppendU(n *Node) *ToBeProcessChan {
 	tmp := &QueueNode{
-		Val:  make([]*Node, 0),
+		Val:  make(chan *Node, 0),
 		Next: nil,
 	}
 	tbpq.Buttom.Next = tmp
 	tbpq.Buttom = tmp
+	tbpq.Buttom.Val <- n
 	return tbpq
 }
 
