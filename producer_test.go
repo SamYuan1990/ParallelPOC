@@ -33,12 +33,12 @@ var _ = Describe("Main", func() {
 			Tx := make([]*pipelinepoc.Node, 0)
 			Tx = append(Tx, Create_A)
 			Tx = append(Tx, Create_B)
-			consumer := &pipelinepoc.Consumer{
+			Producer := &pipelinepoc.Producer{
 				Nodes: make([]*pipelinepoc.Node, 0),
 			}
-			consumer.TreeMaking(Tx)
-			Expect("a").Should(Equal(consumer.Nodes[0].WKey))
-			Expect("b").Should(Equal(consumer.Nodes[1].WKey))
+			Producer.TreeMaking(Tx)
+			Expect("a").Should(Equal(Producer.Nodes[0].WKey))
+			Expect("b").Should(Equal(Producer.Nodes[1].WKey))
 		})
 		// W A W B W A
 		It("should supports WA and WB into 2 nodes", func() {
@@ -75,15 +75,15 @@ var _ = Describe("Main", func() {
 			Tx = append(Tx, Create_A)
 			Tx = append(Tx, Create_B)
 			Tx = append(Tx, Update_A)
-			consumer := &pipelinepoc.Consumer{
+			Producer := &pipelinepoc.Producer{
 				Nodes: make([]*pipelinepoc.Node, 0),
 			}
-			consumer.TreeMaking(Tx)
-			Expect("a").Should(Equal(consumer.Nodes[0].WKey))
-			Expect(0).Should(Equal(consumer.Nodes[0].WKeyVersion))
-			Expect("a").Should(Equal(consumer.Nodes[0].Right.WKey))
-			Expect(1).Should(Equal(consumer.Nodes[0].Right.WKeyVersion))
-			Expect("b").Should(Equal(consumer.Nodes[1].WKey))
+			Producer.TreeMaking(Tx)
+			Expect("a").Should(Equal(Producer.Nodes[0].WKey))
+			Expect(0).Should(Equal(Producer.Nodes[0].WKeyVersion))
+			Expect("a").Should(Equal(Producer.Nodes[0].Right.WKey))
+			Expect(1).Should(Equal(Producer.Nodes[0].Right.WKeyVersion))
+			Expect("b").Should(Equal(Producer.Nodes[1].WKey))
 		})
 
 		// For second block comming, W A, W B, W A/W C, W D, R A W D
@@ -152,32 +152,32 @@ var _ = Describe("Main", func() {
 			Tx = append(Tx, Create_A)
 			Tx = append(Tx, Create_B)
 			Tx = append(Tx, Update_A)
-			consumer := &pipelinepoc.Consumer{
+			Producer := &pipelinepoc.Producer{
 				Nodes: make([]*pipelinepoc.Node, 0),
 			}
-			consumer.TreeMaking(Tx)
-			Expect("a").Should(Equal(consumer.Nodes[0].WKey))
-			Expect(0).Should(Equal(consumer.Nodes[0].WKeyVersion))
-			Expect("a").Should(Equal(consumer.Nodes[0].Right.WKey))
-			Expect(1).Should(Equal(consumer.Nodes[0].Right.WKeyVersion))
-			Expect("b").Should(Equal(consumer.Nodes[1].WKey))
+			Producer.TreeMaking(Tx)
+			Expect("a").Should(Equal(Producer.Nodes[0].WKey))
+			Expect(0).Should(Equal(Producer.Nodes[0].WKeyVersion))
+			Expect("a").Should(Equal(Producer.Nodes[0].Right.WKey))
+			Expect(1).Should(Equal(Producer.Nodes[0].Right.WKeyVersion))
+			Expect("b").Should(Equal(Producer.Nodes[1].WKey))
 			Tx2 := make([]*pipelinepoc.Node, 0)
 			Tx2 = append(Tx2, Create_C)
 			Tx2 = append(Tx2, Create_D)
 			Tx2 = append(Tx2, RA_WD)
-			consumer.TreeMaking(Tx2)
-			Expect("a").Should(Equal(consumer.Nodes[0].WKey))
-			Expect(0).Should(Equal(consumer.Nodes[0].WKeyVersion))
-			Expect("a").Should(Equal(consumer.Nodes[0].Right.WKey))
-			Expect(1).Should(Equal(consumer.Nodes[0].Right.WKeyVersion))
-			Expect("d").Should(Equal(consumer.Nodes[0].Right.Right.WKey))
-			Expect("a").Should(Equal(consumer.Nodes[0].Right.Right.RKey))
-			Expect(1).Should(Equal(consumer.Nodes[0].Right.Right.RKeyVersion))
-			Expect(1).Should(Equal(consumer.Nodes[0].Right.Right.Input))
-			Expect("b").Should(Equal(consumer.Nodes[1].WKey))
-			Expect("c").Should(Equal(consumer.Nodes[2].WKey))
-			Expect("d").Should(Equal(consumer.Nodes[3].WKey))
-			Expect(1).Should(Equal(consumer.Nodes[3].Right.Input))
+			Producer.TreeMaking(Tx2)
+			Expect("a").Should(Equal(Producer.Nodes[0].WKey))
+			Expect(0).Should(Equal(Producer.Nodes[0].WKeyVersion))
+			Expect("a").Should(Equal(Producer.Nodes[0].Right.WKey))
+			Expect(1).Should(Equal(Producer.Nodes[0].Right.WKeyVersion))
+			Expect("d").Should(Equal(Producer.Nodes[0].Right.Right.WKey))
+			Expect("a").Should(Equal(Producer.Nodes[0].Right.Right.RKey))
+			Expect(1).Should(Equal(Producer.Nodes[0].Right.Right.RKeyVersion))
+			Expect(1).Should(Equal(Producer.Nodes[0].Right.Right.Input))
+			Expect("b").Should(Equal(Producer.Nodes[1].WKey))
+			Expect("c").Should(Equal(Producer.Nodes[2].WKey))
+			Expect("d").Should(Equal(Producer.Nodes[3].WKey))
+			Expect(1).Should(Equal(Producer.Nodes[3].Right.Input))
 		})
 	})
 
@@ -207,12 +207,12 @@ var _ = Describe("Main", func() {
 			Tx := make([]*pipelinepoc.Node, 0)
 			Tx = append(Tx, Read_A)
 			Tx = append(Tx, Read_B)
-			consumer := &pipelinepoc.Consumer{
+			Producer := &pipelinepoc.Producer{
 				Nodes: make([]*pipelinepoc.Node, 0),
 			}
-			consumer.TreeMaking(Tx)
-			Expect("a").Should(Equal(consumer.Nodes[0].RKey))
-			Expect("b").Should(Equal(consumer.Nodes[1].RKey))
+			Producer.TreeMaking(Tx)
+			Expect("a").Should(Equal(Producer.Nodes[0].RKey))
+			Expect("b").Should(Equal(Producer.Nodes[1].RKey))
 		})
 		// R A, R A
 		It("should supports RA only nodes", func() {
@@ -230,12 +230,12 @@ var _ = Describe("Main", func() {
 			Tx := make([]*pipelinepoc.Node, 0)
 			Tx = append(Tx, Read_A)
 			Tx = append(Tx, Read_A)
-			consumer := &pipelinepoc.Consumer{
+			Producer := &pipelinepoc.Producer{
 				Nodes: make([]*pipelinepoc.Node, 0),
 			}
-			consumer.TreeMaking(Tx)
-			Expect("a").Should(Equal(consumer.Nodes[0].RKey))
-			Expect("a").Should(Equal(consumer.Nodes[0].Right.RKey))
+			Producer.TreeMaking(Tx)
+			Expect("a").Should(Equal(Producer.Nodes[0].RKey))
+			Expect("a").Should(Equal(Producer.Nodes[0].Right.RKey))
 		})
 
 		It("should WR in same nodes", func() {
@@ -261,12 +261,12 @@ var _ = Describe("Main", func() {
 			Tx := make([]*pipelinepoc.Node, 0)
 			Tx = append(Tx, Create_A)
 			Tx = append(Tx, Read_A)
-			consumer := &pipelinepoc.Consumer{
+			Producer := &pipelinepoc.Producer{
 				Nodes: make([]*pipelinepoc.Node, 0),
 			}
-			consumer.TreeMaking(Tx)
-			Expect("a").Should(Equal(consumer.Nodes[0].WKey))
-			Expect("a").Should(Equal(consumer.Nodes[0].Right.RKey))
+			Producer.TreeMaking(Tx)
+			Expect("a").Should(Equal(Producer.Nodes[0].WKey))
+			Expect("a").Should(Equal(Producer.Nodes[0].Right.RKey))
 		})
 	})
 
@@ -316,14 +316,14 @@ var _ = Describe("Main", func() {
 			Tx = append(Tx, Create_B)
 			Tx = append(Tx, U)
 			Tx = append(Tx, Read_A)
-			consumer := &pipelinepoc.Consumer{
+			Producer := &pipelinepoc.Producer{
 				Nodes: make([]*pipelinepoc.Node, 0),
 			}
-			consumer.TreeMaking(Tx)
-			Expect("a").Should(Equal(consumer.Nodes[0].WKey))
-			Expect("b").Should(Equal(consumer.Nodes[1].WKey))
-			Expect(true).Should(Equal(consumer.Nodes[2].UFlag))
-			Expect("a").Should(Equal(consumer.Nodes[3].RKey))
+			Producer.TreeMaking(Tx)
+			Expect("a").Should(Equal(Producer.Nodes[0].WKey))
+			Expect("b").Should(Equal(Producer.Nodes[1].WKey))
+			Expect(true).Should(Equal(Producer.Nodes[2].UFlag))
+			Expect("a").Should(Equal(Producer.Nodes[3].RKey))
 		})
 	})
 })

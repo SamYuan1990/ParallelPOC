@@ -55,12 +55,12 @@ var _ = Describe("Main", func() {
 			Tx = append(Tx, Create_A)
 			Tx = append(Tx, Create_B)
 			Tx = append(Tx, Update_A)
-			consumer := &pipelinepoc.Consumer{
+			Producer := &pipelinepoc.Producer{
 				Nodes: make([]*pipelinepoc.Node, 0),
 			}
-			consumer.TreeMaking(Tx)
+			Producer.TreeMaking(Tx)
 			ch := make(chan *pipelinepoc.Node, 10)
-			consumer.IntoChan(ch)
+			Producer.IntoChan(ch)
 			Processor := &pipelinepoc.Processor{}
 			verify := Processor.Process(ch)
 			defer close(ch)
@@ -81,12 +81,12 @@ var _ = Describe("Main", func() {
 			Tx = append(Tx, Create_B)
 			Tx = append(Tx, Update_A)
 			Tx = append(Tx, RA_WB)
-			consumer := &pipelinepoc.Consumer{
+			Producer := &pipelinepoc.Producer{
 				Nodes: make([]*pipelinepoc.Node, 0),
 			}
-			consumer.TreeMaking(Tx)
+			Producer.TreeMaking(Tx)
 			ch := make(chan *pipelinepoc.Node, 10)
-			consumer.IntoChan(ch)
+			Producer.IntoChan(ch)
 			Processor := &pipelinepoc.Processor{}
 			verify := Processor.Process(ch)
 			defer close(ch)

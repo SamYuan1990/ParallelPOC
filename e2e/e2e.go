@@ -69,12 +69,12 @@ func main() {
 	Tx = append(Tx, Create_C)
 	Tx = append(Tx, Create_D)
 	Tx = append(Tx, RA_WD)
-	consumer := &pipelinepoc.Consumer{
+	Producer := &pipelinepoc.Producer{
 		Nodes: make([]*pipelinepoc.Node, 0),
 	}
-	consumer.TreeMaking(Tx)
+	Producer.TreeMaking(Tx)
 	ch := make(chan *pipelinepoc.Node, 10)
-	consumer.IntoChan(ch)
+	Producer.IntoChan(ch)
 
 	Processor1 := &pipelinepoc.Processor{Name: "p1"}
 	Processor2 := &pipelinepoc.Processor{Name: "p2"}

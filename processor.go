@@ -32,10 +32,10 @@ func (p *Processor) Process(ch chan *Node) []*Node {
 			cur.Processed = true
 			fmt.Println(p.Name, " Process ", cur)
 			if cur.RKey != "" {
-				time.Sleep(time.Second * 3)
+				time.Sleep(time.Nanosecond * 3)
 			}
 			if cur.WKey != "" {
-				time.Sleep(time.Second * 5)
+				time.Sleep(time.Nanosecond * 5)
 			}
 			rs = append(rs, cur)
 			if cur.Right != nil {

@@ -1,12 +1,12 @@
 package pipelinepoc
 
-type Consumer struct {
+type Producer struct {
 	Nodes []*Node
 	NextU int
 }
 
 // Dequeue // a,b,c
-func (c *Consumer) TreeMaking(txs []*Node) {
+func (c *Producer) TreeMaking(txs []*Node) {
 	for _, v := range txs {
 		find := false
 		if v.UFlag {
@@ -33,7 +33,7 @@ func (c *Consumer) TreeMaking(txs []*Node) {
 	}
 }
 
-func (c *Consumer) IntoChan(ch chan *Node) {
+func (c *Producer) IntoChan(ch chan *Node) {
 	for _, v := range c.Nodes {
 		ch <- v
 	}
