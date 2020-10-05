@@ -74,11 +74,13 @@ func main() {
 	}
 	Producer.TreeMaking(Tx)
 	ch := make(chan *pipelinepoc.Node, 10)
-	Producer.IntoChan(ch)
+	done := make(chan bool)
 
 	Processor1 := &pipelinepoc.Processor{Name: "p1"}
 	Processor2 := &pipelinepoc.Processor{Name: "p2"}
-	go Processor1.Process(ch)
-	Processor2.Process(ch)
-	defer close(ch)
+	go Processor1.Process(ch, done)
+	go Processor2.Process(ch, done)
+	go Producer.IntoChan(ch)
+
+	<-done
 }

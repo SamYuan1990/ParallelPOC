@@ -9,7 +9,7 @@ type Processor struct {
 	Name string
 }
 
-func (p *Processor) Process(ch chan *Node) []*Node {
+func (p *Processor) Process(ch chan *Node, done chan bool) []*Node {
 	rs := make([]*Node, 0)
 	fmt.Println("Start Process")
 	for {
@@ -52,6 +52,7 @@ func (p *Processor) Process(ch chan *Node) []*Node {
 			}
 		}
 	}
+	done <- true
 	//todo:dequeue
 	return rs
 }
