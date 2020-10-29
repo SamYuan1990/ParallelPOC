@@ -41,19 +41,39 @@ func (n *Node) ReduceInput() {
 }
 
 func (n *Node) AddReadKey(input *Node) {
-	if n.RKeyVersion <= input.RKeyVersion {
-		//right
-		if n.Right == nil {
-			n.Right = input
+	if n.RKeyVersion > 0 {
+		// adding read to read
+		if n.RKeyVersion <= input.RKeyVersion {
+			//right
+			if n.Right == nil {
+				n.Right = input
+			} else {
+				n.Right.AddReadKey(input)
+			}
 		} else {
-			n.Right.AddReadKey(input)
+			//left
+			if n.Left == nil {
+				n.Left = input
+			} else {
+				n.Left.AddReadKey(input)
+			}
 		}
 	} else {
-		//left
-		if n.Left == nil {
-			n.Left = input
+		// adding read after write
+		if n.WKeyVersion <= input.RKeyVersion {
+			//right
+			if n.Right == nil {
+				n.Right = input
+			} else {
+				n.Right.AddReadKey(input)
+			}
 		} else {
-			n.Left.AddReadKey(input)
+			//left
+			if n.Left == nil {
+				n.Left = input
+			} else {
+				n.Left.AddReadKey(input)
+			}
 		}
 	}
 }
