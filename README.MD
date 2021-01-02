@@ -1,23 +1,9 @@
-# Trun for normal nodes
+# This is a Research type of Repo
 
-# Producer
-receive txs array
-1. Convert txs array into nodes array
-2. While the nodes array is not empty, put into channel of nodes
+## Point 1: How to Parallel process tx in different Blocks 
+### Assuming one block with different txs and txs can be id by read keys and write keys
 
-# Processor
-1. Read from channel
-2. Process
+How about a LRU Queue based parallel mode?
+![design](Design1.png)
 
-# Turn for supports U
-# Producer
-receive txs array
-1. Convert txs array into nodes array
-2. While the nodes array is not empty, put into channel of nodes
-3. Wait Group
-
-# Processor
-1. Read from channel
-2. Process
-3. Wait Group
-4. Tx channels as copy and return terms
+![LRU_logic](Design2.png)
