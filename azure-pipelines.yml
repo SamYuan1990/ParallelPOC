@@ -24,5 +24,5 @@ jobs:
       - task: Go@0
         inputs:
           command: 'test'
-          arguments: '-v ./... -bench -cover'
+          arguments: '-v ./... -bench=. -cover'
           workingDirectory: '$(System.DefaultWorkingDirectory)'
