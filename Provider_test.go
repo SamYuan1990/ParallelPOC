@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/SamYuan1990/pipelinepoc"
-	lru "github.com/hashicorp/golang-lru"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -27,9 +26,10 @@ var _ = Describe("Provider", func() {
 
 	Context("Convert", func() {
 		It("Basic testing", func() {
-			LRU, _ := lru.New(128)
+			p := &pipelinepoc.Pipeline{}
+			p.Init()
 			ProviderImpl := &pipelinepoc.ProviderImpl{
-				LRU: LRU,
+				Pipeline: p,
 			}
 			Wkeys := make([]pipelinepoc.Key, 0)
 			Rkeys := make([]pipelinepoc.Key, 0)
@@ -46,74 +46,78 @@ var _ = Describe("Provider", func() {
 			}
 			ProviderImpl.Convert(BlockImpl)
 			node := ProviderImpl.ConvertTxToNode(&tximpl)
-			Expect(len(LRU.Keys())).Should(Equal(1))
-			key, value, ok := LRU.RemoveOldest()
+			Expect(len(p.Current.Keys())).Should(Equal(1))
+			key, value, ok := p.RemoveOldest()
 			Expect(ok).Should(Equal(true))
 			Expect(key).Should(Equal(node.GetKeys()))
 			Expect(value.(*pipelinepoc.Node).Wkeys).Should(Equal(Wkeys))
 			Expect(value.(*pipelinepoc.Node).Rkeys).Should(Equal(Rkeys))
-			Expect(len(LRU.Keys())).Should(Equal(0))
+			Expect(len(p.Current.Keys())).Should(Equal(0))
 		})
 
 		It("Key Merge", func() {
-			LRU, _ := lru.New(128)
+			p := &pipelinepoc.Pipeline{}
+			p.Init()
 			ProviderImpl := &pipelinepoc.ProviderImpl{
-				LRU: LRU,
+				Pipeline: p,
 			}
 			BlockImpl := ConstructBlock("key", 0)
 			AnotherBlock := ConstructBlock("key", 1)
 			ProviderImpl.Convert(BlockImpl)
 			ProviderImpl.Convert(AnotherBlock)
-			Expect(len(LRU.Keys())).Should(Equal(1))
-			_, value, ok := LRU.RemoveOldest()
+			Expect(len(p.Current.Keys())).Should(Equal(1))
+			_, value, ok := p.RemoveOldest()
 			Expect(ok).Should(Equal(true))
 			node := value.(*pipelinepoc.Node)
 			Expect(node.Next).NotTo(BeNil())
-			Expect(len(LRU.Keys())).Should(Equal(0))
+			Expect(len(p.Current.Keys())).Should(Equal(0))
 		})
 
 		It("Key Merge 2", func() {
-			LRU, _ := lru.New(128)
+			p := &pipelinepoc.Pipeline{}
+			p.Init()
 			ProviderImpl := &pipelinepoc.ProviderImpl{
-				LRU: LRU,
+				Pipeline: p,
 			}
 			BlockImpl := ConstructBlocks("key", "abc")
 			AnotherBlock := ConstructBlock("key", 1)
 			ProviderImpl.Convert(BlockImpl)
 			ProviderImpl.Convert(AnotherBlock)
-			Expect(len(LRU.Keys())).Should(Equal(1))
-			_, value, ok := LRU.RemoveOldest()
+			Expect(len(p.Current.Keys())).Should(Equal(1))
+			_, value, ok := p.RemoveOldest()
 			Expect(ok).Should(Equal(true))
 			node := value.(*pipelinepoc.Node)
 			Expect(node.Next).NotTo(BeNil())
 			Expect(strings.Contains(node.GetKeys(), "key")).Should(Equal(true))
 			Expect(strings.Contains(node.GetKeys(), "abc")).Should(Equal(true))
-			Expect(len(LRU.Keys())).Should(Equal(0))
+			Expect(len(p.Current.Keys())).Should(Equal(0))
 		})
 
 		It("Key Merge 2", func() {
-			LRU, _ := lru.New(128)
+			p := &pipelinepoc.Pipeline{}
+			p.Init()
 			ProviderImpl := &pipelinepoc.ProviderImpl{
-				LRU: LRU,
+				Pipeline: p,
 			}
 			BlockImpl := ConstructBlock("key", 1)
 			AnotherBlock := ConstructBlocks("key", "abc")
 			ProviderImpl.Convert(BlockImpl)
 			ProviderImpl.Convert(AnotherBlock)
-			Expect(len(LRU.Keys())).Should(Equal(1))
-			key, value, ok := LRU.RemoveOldest()
+			Expect(len(p.Current.Keys())).Should(Equal(1))
+			key, value, ok := p.RemoveOldest()
 			Expect(ok).Should(Equal(true))
 			node := value.(*pipelinepoc.Node)
 			Expect(node.Next).NotTo(BeNil())
 			Expect(strings.Contains(key.(string), "key")).Should(Equal(true))
 			Expect(strings.Contains(key.(string), "abc")).Should(Equal(true))
-			Expect(len(LRU.Keys())).Should(Equal(0))
+			Expect(len(p.Current.Keys())).Should(Equal(0))
 		})
 
 		It("Key Merge 3", func() {
-			LRU, _ := lru.New(128)
+			p := &pipelinepoc.Pipeline{}
+			p.Init()
 			ProviderImpl := &pipelinepoc.ProviderImpl{
-				LRU: LRU,
+				Pipeline: p,
 			}
 			BlockImpl := ConstructBlock("key", 0)
 			AnotherBlock := ConstructBlock("abc", 1)
@@ -121,20 +125,20 @@ var _ = Describe("Provider", func() {
 			ProviderImpl.Convert(BlockImpl)
 			ProviderImpl.Convert(AnotherBlock)
 			ProviderImpl.Convert(ThridBlock)
-			Expect(len(LRU.Keys())).Should(Equal(3))
-			key, value, ok := LRU.RemoveOldest()
+			Expect(len(p.Current.Keys())).Should(Equal(3))
+			key, value, ok := p.RemoveOldest()
 			Expect(ok).Should(Equal(true))
 			node := value.(*pipelinepoc.Node)
 			Expect(node.Next).To(BeNil())
 			Expect(node.GetKeys()).Should(Equal("key"))
 			Expect(key.(string)).Should(Equal("key"))
-			key, value, ok = LRU.RemoveOldest()
+			key, value, ok = p.RemoveOldest()
 			Expect(ok).Should(Equal(true))
 			node = value.(*pipelinepoc.Node)
 			Expect(node.Next).To(BeNil())
 			Expect(node.GetKeys()).Should(Equal("abc"))
 			Expect(key.(string)).Should(Equal("abc"))
-			key, value, ok = LRU.RemoveOldest()
+			key, value, ok = p.RemoveOldest()
 			Expect(ok).Should(Equal(true))
 			node = value.(*pipelinepoc.Node)
 			Expect(node.Next).To(BeNil())
