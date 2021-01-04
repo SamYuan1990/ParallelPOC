@@ -2,18 +2,16 @@ package pipelinepoc
 
 import (
 	"time"
-
-	lru "github.com/hashicorp/golang-lru"
 )
 
 type Consumer struct {
-	LRU  *lru.Cache
-	stop bool
+	Pipeline *Pipeline
+	stop     bool
 }
 
 func (c *Consumer) Consume(output chan *Node) {
 	for {
-		_, value, ok := c.LRU.RemoveOldest()
+		_, value, ok := c.Pipeline.RemoveOldest()
 		if ok {
 			node := value.(*Node)
 			time.Sleep(time.Millisecond * 30)

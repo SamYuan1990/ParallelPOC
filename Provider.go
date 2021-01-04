@@ -2,15 +2,13 @@ package pipelinepoc
 
 import (
 	"strings"
-
-	lru "github.com/hashicorp/golang-lru"
 )
 
 // TODO
 // Type Provider interface{}
 
 type ProviderImpl struct {
-	LRU *lru.Cache
+	Pipeline *Pipeline
 }
 
 func (impl *ProviderImpl) Convert(b *BlockImpl) {
@@ -20,12 +18,12 @@ func (impl *ProviderImpl) Convert(b *BlockImpl) {
 		// Put Node into pipeline
 		node := impl.ConvertTxToNode(&tx)
 		keyStr := node.GetKeys()
-		Keys := impl.LRU.Keys()
+		Keys := impl.Pipeline.Current.Keys()
 		found := 0
 		var nodeInLRU *Node
 		for _, key := range Keys {
 			if strings.Contains(key.(string), keyStr) || strings.Contains(keyStr, key.(string)) {
-				v, ok := impl.LRU.Get(key)
+				v, ok := impl.Pipeline.Current.Get(key)
 				if ok {
 					nodeInLRU = v.(*Node)
 				}
@@ -33,12 +31,11 @@ func (impl *ProviderImpl) Convert(b *BlockImpl) {
 			}
 		}
 		if found == 1 {
-			impl.LRU.Remove(nodeInLRU.GetKeys())
+			impl.Pipeline.Current.Remove(nodeInLRU.GetKeys())
 			nodeInLRU.Add(node)
-			impl.LRU.Add(nodeInLRU.MergeKey(keyStr), nodeInLRU)
-
+			impl.Pipeline.Add(nodeInLRU.MergeKey(keyStr), nodeInLRU)
 		} else {
-			impl.LRU.Add(keyStr, node)
+			impl.Pipeline.Add(keyStr, node)
 		}
 	}
 }
