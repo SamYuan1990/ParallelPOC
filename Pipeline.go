@@ -45,6 +45,7 @@ func (p *Pipeline) RemoveOldest() (key interface{}, value interface{}, ok bool) 
 		}
 	} else {
 		for v.(*lru.Cache).Len() == 0 {
+			// TODO: should not running before previous fully completed
 			p.FIFO.Remove(0)
 			v, _ = p.FIFO.Get(0)
 			if v == p.Current {
