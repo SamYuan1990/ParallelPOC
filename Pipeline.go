@@ -1,6 +1,8 @@
 package pipelinepoc
 
 import (
+	"sync"
+
 	"github.com/enriquebris/goconcurrentqueue"
 	lru "github.com/hashicorp/golang-lru"
 )
@@ -8,50 +10,73 @@ import (
 const Len = 10240
 
 type Pipeline struct {
-	FIFO    *goconcurrentqueue.FIFO
+	// a comming queue for comming blocks received
+	Comming *goconcurrentqueue.FIFO
+	// current processing lru
+	// it should be a map for key tx mapping
+	// it should be concurrent
+	// it should be support get oldest as FIFO
+	// so it is LRU map
 	Current *lru.Cache
+	// the next will be used when current is logiclly full
+	// when current is finisehd processed, the next and current will be exchanged.(similar with java young gc)
+	Next *lru.Cache
+	// the output should be able to support block tx mapping
+	// should be able to return as FIFO ways
+	Output *goconcurrentqueue.FIFO
+
+	PCurrent *lru.Cache
+	PNext    *lru.Cache
+
+	CCurrent *lru.Cache
+	CNext    *lru.Cache
+
+	lock sync.Mutex
 }
 
 func (p *Pipeline) Init() error {
 	var err error
-	p.FIFO = goconcurrentqueue.NewFIFO()
+	p.Comming = goconcurrentqueue.NewFIFO()
+	p.Output = goconcurrentqueue.NewFIFO()
 	p.Current, err = lru.New(Len)
-	err = p.FIFO.Enqueue(p.Current)
-	return err
-}
-
-func (p *Pipeline) Add(key, value interface{}) {
-	p.Current.Add(key, value)
-}
-
-func (p *Pipeline) AddWithNewLRU(key, value interface{}) error {
-	var err error
-	p.Current, err = lru.New(Len)
-	err = p.FIFO.Enqueue(p.Current)
-	p.Add(key, value)
-	return err
-}
-
-func (p *Pipeline) RemoveOldest() (key interface{}, value interface{}, ok bool) {
-	v, err := p.FIFO.Get(0)
 	if err != nil {
-		return nil, nil, false
+		return err
 	}
-	if v == p.Current {
-		if v.(*lru.Cache).Len() == 0 {
-			return nil, nil, false
-		} else {
-			return v.(*lru.Cache).RemoveOldest()
-		}
-	} else {
-		for v.(*lru.Cache).Len() == 0 {
-			// TODO: should not running before previous fully completed
-			p.FIFO.Remove(0)
-			v, _ = p.FIFO.Get(0)
-			if v == p.Current {
-				return v.(*lru.Cache).RemoveOldest()
-			}
-		}
-		return v.(*lru.Cache).RemoveOldest()
+	p.Next, err = lru.New(Len)
+	if err != nil {
+		return err
 	}
+	p.PCurrent = p.Current
+	p.PNext = p.Next
+	p.CCurrent = p.Current
+	p.CNext = p.Next
+	return nil
+}
+
+func (p *Pipeline) SwitchP() {
+	p.lock.Lock()
+	defer p.lock.Unlock()
+	tmp := p.PCurrent
+	p.PCurrent = p.PNext
+	p.PNext = tmp
+}
+
+func (p *Pipeline) SwitchC() {
+	p.lock.Lock()
+	defer p.lock.Unlock()
+	//if !p.SwitchAble() {
+	tmp := p.CCurrent
+	p.CCurrent = p.CNext
+	p.CNext = tmp
+	//}
+}
+
+// if Pcurrent same with Ccurrent, able to switch
+func (p *Pipeline) SwitchAble() bool {
+	p.lock.Lock()
+	defer p.lock.Unlock()
+	if p.CCurrent == p.PCurrent {
+		return true
+	}
+	return false
 }

@@ -18,10 +18,10 @@ func ConstructBlocks(key string, anotherkey string) *pipelinepoc.BlockImpl {
 	keys := ConstructKey(key, 0)
 	anotherkeys := ConstructKey(anotherkey, 0)
 	Wkeys = append(Wkeys, keys, anotherkeys)
-	tximpl := pipelinepoc.TxImpl{
+	tximpl := &pipelinepoc.TxImpl{
 		Wkeys: Wkeys,
 	}
-	txs := make([]pipelinepoc.TxImpl, 0)
+	txs := make([]*pipelinepoc.TxImpl, 0)
 	txs = append(txs, tximpl)
 
 	BlockImpl := &pipelinepoc.BlockImpl{
@@ -34,10 +34,10 @@ func ConstructBlock(key string, value int) *pipelinepoc.BlockImpl {
 	Wkeys := make([]pipelinepoc.Key, 0)
 	keys := ConstructKey(key, value)
 	Wkeys = append(Wkeys, keys)
-	tximpl := pipelinepoc.TxImpl{
+	tximpl := &pipelinepoc.TxImpl{
 		Wkeys: Wkeys,
 	}
-	txs := make([]pipelinepoc.TxImpl, 0)
+	txs := make([]*pipelinepoc.TxImpl, 0)
 	txs = append(txs, tximpl)
 
 	BlockImpl := &pipelinepoc.BlockImpl{
@@ -57,8 +57,11 @@ func ConstructNodeWithSingleKey(key string, value int) *pipelinepoc.Node {
 	Wkeys0 := make([]pipelinepoc.Key, 0)
 	key0 := ConstructKey(key, value)
 	Wkeys0 = append(Wkeys0, key0)
-	return &pipelinepoc.Node{
+	tximpl := pipelinepoc.TxImpl{
 		Wkeys: Wkeys0,
+	}
+	return &pipelinepoc.Node{
+		Tx: &tximpl,
 	}
 }
 
@@ -67,7 +70,10 @@ func ConstructNodeWithTwoKey(key string, key1 string) *pipelinepoc.Node {
 	key_0 := ConstructKey(key, 0)
 	key_1 := ConstructKey(key1, 0)
 	Wkeys0 = append(Wkeys0, key_0, key_1)
-	return &pipelinepoc.Node{
+	tximpl := pipelinepoc.TxImpl{
 		Wkeys: Wkeys0,
+	}
+	return &pipelinepoc.Node{
+		Tx: &tximpl,
 	}
 }

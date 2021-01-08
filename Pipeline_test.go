@@ -12,73 +12,50 @@ var _ = Describe("Pipeline", func() {
 		err := p.Init()
 		Expect(err).NotTo(HaveOccurred())
 		Expect(p).NotTo(BeNil())
-		Expect(p.FIFO).NotTo(BeNil())
+		Expect(p.Comming).NotTo(BeNil())
 		Expect(p.Current).NotTo(BeNil())
 		Expect(p.Current.Len()).Should(Equal(0))
+		Expect(p.Next).NotTo(BeNil())
+		Expect(p.Next.Len()).Should(Equal(0))
+		Expect(p.Output).NotTo(BeNil())
+		Expect(p.SwitchAble()).Should(BeTrue())
 	})
 
-	It("Add item", func() {
+	It("SwitchP", func() {
 		p := &pipelinepoc.Pipeline{}
 		err := p.Init()
 		Expect(err).NotTo(HaveOccurred())
-		node := ConstructNodeWithSingleKey("key", 0)
-		p.Add(node.GetKeys(), node)
-		Expect(p.Current.Len()).Should(Equal(1))
-		_, value, ok := p.Current.RemoveOldest()
-		Expect(ok).Should(Equal(true))
-		Expect(value.(*pipelinepoc.Node)).Should(Equal(node))
-	})
-
-	It("Add item with new lru", func() {
-		p := &pipelinepoc.Pipeline{}
-		err := p.Init()
-		Expect(err).NotTo(HaveOccurred())
-		node := ConstructNodeWithSingleKey("key", 0)
-		p.AddWithNewLRU(node.GetKeys(), node)
-		Expect(p.FIFO.GetLen()).Should(Equal(2))
-		Expect(p.Current.Len()).Should(Equal(1))
-		_, value, ok := p.Current.RemoveOldest()
-		Expect(ok).Should(Equal(true))
-		Expect(value.(*pipelinepoc.Node)).Should(Equal(node))
-		p.FIFO.Dequeue()
-		v, err := p.FIFO.Dequeue()
-		Expect(err).NotTo(HaveOccurred())
-		Expect(v).Should(Equal(p.Current))
-	})
-
-	It("RemoveOldest Item", func() {
-		p := &pipelinepoc.Pipeline{}
-		err := p.Init()
-		Expect(err).NotTo(HaveOccurred())
-		node := ConstructNodeWithSingleKey("key", 0)
-		p.Add(node.GetKeys(), node)
-		_, value, ok := p.RemoveOldest()
-		Expect(ok).Should(Equal(true))
-		Expect(value.(*pipelinepoc.Node)).Should(Equal(node))
+		Expect(p).NotTo(BeNil())
+		Expect(p.Comming).NotTo(BeNil())
+		current := p.PCurrent
+		Expect(p.Current).NotTo(BeNil())
 		Expect(p.Current.Len()).Should(Equal(0))
-		Expect(p.FIFO.GetLen()).Should(Equal(1))
+		next := p.PNext
+		Expect(p.Next).NotTo(BeNil())
+		Expect(p.Next.Len()).Should(Equal(0))
+		Expect(p.Output).NotTo(BeNil())
+		p.SwitchP()
+		Expect(p.PNext).Should(Equal(current))
+		Expect(p.PCurrent).Should(Equal(next))
+		Expect(p.SwitchAble()).Should(BeFalse())
 	})
 
-	It("RemoveOldest empty Item", func() {
+	It("SwitchC", func() {
 		p := &pipelinepoc.Pipeline{}
 		err := p.Init()
 		Expect(err).NotTo(HaveOccurred())
-		_, _, ok := p.RemoveOldest()
-		Expect(ok).Should(Equal(false))
+		Expect(p).NotTo(BeNil())
+		Expect(p.Comming).NotTo(BeNil())
+		current := p.CCurrent
+		Expect(p.Current).NotTo(BeNil())
 		Expect(p.Current.Len()).Should(Equal(0))
-		Expect(p.FIFO.GetLen()).Should(Equal(1))
-	})
-
-	It("RemoveOldest and Remove LRU", func() {
-		p := &pipelinepoc.Pipeline{}
-		err := p.Init()
-		Expect(err).NotTo(HaveOccurred())
-		node := ConstructNodeWithSingleKey("key", 0)
-		p.AddWithNewLRU(node.GetKeys(), node)
-		_, value, ok := p.RemoveOldest()
-		Expect(ok).Should(Equal(true))
-		Expect(value.(*pipelinepoc.Node)).Should(Equal(node))
-		Expect(p.Current.Len()).Should(Equal(0))
-		Expect(p.FIFO.GetLen()).Should(Equal(1))
+		next := p.CNext
+		Expect(p.Next).NotTo(BeNil())
+		Expect(p.Next.Len()).Should(Equal(0))
+		Expect(p.Output).NotTo(BeNil())
+		p.SwitchC()
+		Expect(p.CNext).Should(Equal(current))
+		Expect(p.CCurrent).Should(Equal(next))
+		Expect(p.SwitchAble()).Should(BeFalse())
 	})
 })
