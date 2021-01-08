@@ -1,32 +1,44 @@
 package pipelinepoc
 
 import (
-	"time"
+	"sync"
 )
 
 type Consumer struct {
 	Pipeline *Pipeline
-	stop     bool
+	Wg       *sync.WaitGroup
+	stopped  bool
+	suspend  bool
 }
 
-func (c *Consumer) Consume(output chan *Node) {
-	for {
-		_, value, ok := c.Pipeline.RemoveOldest()
+func (c *Consumer) Consume() {
+	for !c.stopped {
+		if c.suspend {
+			continue
+		}
+		// get from pipeline
+		_, value, ok := c.Pipeline.CCurrent.RemoveOldest()
 		if ok {
-			node := value.(*Node)
-			time.Sleep(time.Millisecond * 30)
-			//fmt.Println(node)
-			for node != nil {
-				output <- node
-				node = node.Next
+			tmp := value.(*Node)
+			//c.Pipeline.CCurrent.Remove(key)
+			for tmp != nil {
+				tmp.Tx.Processed = true
+				tmp = tmp.Next
 			}
 		}
-		if c.stop {
-			return
+		if c.Pipeline.CCurrent.Len() == 0 && c.Pipeline.CNext.Len() > 0 {
+			//wait group here
+			c.Wg.Done()
+			c.suspend = true
+			//c.Wg.Wait()
 		}
 	}
 }
 
 func (c *Consumer) Stop() {
-	c.stop = true
+	c.stopped = true
+}
+
+func (c *Consumer) Resume() {
+	c.suspend = false
 }

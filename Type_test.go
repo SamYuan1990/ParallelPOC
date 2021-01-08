@@ -36,16 +36,19 @@ var _ = Describe("Type", func() {
 
 		It("Wkeys", func() {
 			Wkeys := make([]pipelinepoc.Key, 0)
-			data := &pipelinepoc.Node{
+			tximpl := pipelinepoc.TxImpl{
 				Wkeys: Wkeys,
 			}
-			Expect(data.Wkeys).Should(Equal(Wkeys))
+			data := &pipelinepoc.Node{
+				Tx: &tximpl,
+			}
+			Expect(data.Tx.Wkeys).Should(Equal(Wkeys))
 		})
 	})
 
 	Context("Block Sample", func() {
 		It("BlockImp", func() {
-			txs := make([]pipelinepoc.TxImpl, 0)
+			txs := make([]*pipelinepoc.TxImpl, 0)
 			BlockImpl := &pipelinepoc.BlockImpl{
 				Txs: txs,
 			}
