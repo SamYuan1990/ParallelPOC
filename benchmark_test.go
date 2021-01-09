@@ -3,7 +3,6 @@ package pipelinepoc
 import (
 	"math/rand"
 	"strconv"
-	"sync"
 	"testing"
 	"time"
 )
@@ -47,7 +46,7 @@ func BenchmarkProvider(b *testing.B) {
 		}
 	}()
 	for i := 0; i < b.N; {
-		//time.Sleep(100 * time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
 		v, err := p.Output.Dequeue()
 		if err == nil && v != nil {
 			i++
@@ -57,6 +56,7 @@ func BenchmarkProvider(b *testing.B) {
 	ProviderImpl.Stop()
 }
 
+/*
 func BenchmarkSingle(b *testing.B) {
 	b.ReportAllocs()
 	p := &Pipeline{}
@@ -80,7 +80,7 @@ func BenchmarkSingle(b *testing.B) {
 		}
 	}()
 	for i := 0; i < b.N; {
-		//time.Sleep(100 * time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
 		v, err := p.Output.Dequeue()
 		if err == nil && v != nil {
 			if v.(*BlockImpl).Txs[0].Processed {
@@ -93,6 +93,7 @@ func BenchmarkSingle(b *testing.B) {
 	c.Stop()
 }
 
+/*
 func BenchmarkParallel2(b *testing.B) {
 	b.ReportAllocs()
 	p := &Pipeline{}
@@ -143,3 +144,4 @@ func BenchmarkParallel2(b *testing.B) {
 	c1.Stop()
 	Switcher.Stop()
 }
+*/
