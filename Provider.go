@@ -18,7 +18,13 @@ func (impl *ProviderImpl) Convert() {
 		if err != nil {
 			return
 		}
+		if v == nil {
+			continue
+		}
 		b := v.(*BlockImpl)
+		if b == nil {
+			continue
+		}
 		// For each tx in block
 		for _, tx := range b.GetTxs() {
 			// Convert block into tx
