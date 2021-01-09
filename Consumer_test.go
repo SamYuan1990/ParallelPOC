@@ -328,9 +328,9 @@ var _ = Describe("Consumer", func() {
 		p.Comming.Enqueue(FiFthBlock)
 		p.Comming.Enqueue(SixthBlock)
 		time.Sleep(100 * time.Millisecond)
-		ProviderImpl.Stop()
-		c.Stop()
-		Switcher.Stop()
+		defer ProviderImpl.Stop()
+		defer c.Stop()
+		defer Switcher.Stop()
 
 		v, _ := p.Output.Dequeue()
 		Expect(v).Should(Equal(BlockImpl))
