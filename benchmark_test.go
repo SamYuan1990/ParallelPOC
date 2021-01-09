@@ -3,6 +3,7 @@ package pipelinepoc
 import (
 	"math/rand"
 	"strconv"
+	"sync"
 	"testing"
 	"time"
 )
@@ -38,6 +39,7 @@ func BenchmarkProvider(b *testing.B) {
 		Pipeline: p,
 	}
 	go ProviderImpl.Convert()
+	defer ProviderImpl.Stop()
 	b.ResetTimer()
 	go func() {
 		for i := 0; i < b.N; i++ {
@@ -53,10 +55,8 @@ func BenchmarkProvider(b *testing.B) {
 		}
 	}
 	b.StopTimer()
-	ProviderImpl.Stop()
 }
 
-/*
 func BenchmarkSingle(b *testing.B) {
 	b.ReportAllocs()
 	p := &Pipeline{}
@@ -72,6 +72,8 @@ func BenchmarkSingle(b *testing.B) {
 	}
 	go ProviderImpl.Convert()
 	go c.Consume()
+	defer ProviderImpl.Stop()
+	defer c.Stop()
 	b.ResetTimer()
 	go func() {
 		for i := 0; i < b.N; i++ {
@@ -83,17 +85,15 @@ func BenchmarkSingle(b *testing.B) {
 		time.Sleep(100 * time.Millisecond)
 		v, err := p.Output.Dequeue()
 		if err == nil && v != nil {
-			if v.(*BlockImpl).Txs[0].Processed {
-				i++
+			for !v.(*BlockImpl).Txs[0].Processed {
+
 			}
+			i++
 		}
 	}
 	b.StopTimer()
-	ProviderImpl.Stop()
-	c.Stop()
 }
 
-/*
 func BenchmarkParallel2(b *testing.B) {
 	b.ReportAllocs()
 	p := &Pipeline{}
@@ -122,6 +122,10 @@ func BenchmarkParallel2(b *testing.B) {
 	go ProviderImpl.Convert()
 	go c.Consume()
 	go c1.Consume()
+	defer ProviderImpl.Stop()
+	defer c.Stop()
+	defer c1.Stop()
+	defer Switcher.Stop()
 	b.ResetTimer()
 	go func() {
 		for i := 0; i < b.N; i++ {
@@ -133,15 +137,11 @@ func BenchmarkParallel2(b *testing.B) {
 		time.Sleep(100 * time.Millisecond)
 		v, err := p.Output.Dequeue()
 		if err == nil && v != nil {
-			if v.(*BlockImpl).Txs[0].Processed {
-				i++
+			for !v.(*BlockImpl).Txs[0].Processed {
+
 			}
+			i++
 		}
 	}
 	b.StopTimer()
-	ProviderImpl.Stop()
-	c.Stop()
-	c1.Stop()
-	Switcher.Stop()
 }
-*/

@@ -22,7 +22,7 @@ func (c *Consumer) Consume() {
 			tmp := value.(*Node)
 			//c.Pipeline.CCurrent.Remove(key)
 			for tmp != nil {
-				//time.Sleep(time.Millisecond)
+				//time.Sleep(5 * time.Millisecond)
 				tmp.Tx.Processed = true
 				tmp = tmp.Next
 			}
