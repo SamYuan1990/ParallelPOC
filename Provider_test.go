@@ -33,6 +33,8 @@ var _ = Describe("Provider", func() {
 				Pipeline: p,
 			}
 			go ProviderImpl.Convert()
+			defer ProviderImpl.Stop()
+
 			Wkeys := make([]pipelinepoc.Key, 0)
 			Rkeys := make([]pipelinepoc.Key, 0)
 
@@ -47,7 +49,8 @@ var _ = Describe("Provider", func() {
 				Txs: txs,
 			}
 			p.Comming.Enqueue(BlockImpl)
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(500 * time.Millisecond)
+
 			node := ProviderImpl.ConvertTxToNode(tximpl)
 			Expect(len(p.PCurrent.Keys())).Should(Equal(1))
 			key, value, ok := p.PCurrent.RemoveOldest()
@@ -71,11 +74,13 @@ var _ = Describe("Provider", func() {
 				Pipeline: p,
 			}
 			go ProviderImpl.Convert()
+			defer ProviderImpl.Stop()
+
 			BlockImpl := ConstructBlock("key", 0)
 			AnotherBlock := ConstructBlock("key", 1)
 			p.Comming.Enqueue(BlockImpl)
 			p.Comming.Enqueue(AnotherBlock)
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(500 * time.Millisecond)
 
 			Expect(len(p.PCurrent.Keys())).Should(Equal(1))
 			key, value, ok := p.PCurrent.RemoveOldest()
@@ -105,8 +110,9 @@ var _ = Describe("Provider", func() {
 			AnotherBlock := ConstructBlock("key", 1)
 			p.Comming.Enqueue(BlockImpl)
 			p.Comming.Enqueue(AnotherBlock)
-			time.Sleep(100 * time.Millisecond)
-			ProviderImpl.Stop()
+			time.Sleep(500 * time.Millisecond)
+
+			defer ProviderImpl.Stop()
 
 			Expect(len(p.PCurrent.Keys())).Should(Equal(1))
 			key, value, ok := p.PCurrent.RemoveOldest()
@@ -137,8 +143,9 @@ var _ = Describe("Provider", func() {
 			AnotherBlock := ConstructBlocks("key", "abc")
 			p.Comming.Enqueue(BlockImpl)
 			p.Comming.Enqueue(AnotherBlock)
-			time.Sleep(100 * time.Millisecond)
-			ProviderImpl.Stop()
+			time.Sleep(500 * time.Millisecond)
+
+			defer ProviderImpl.Stop()
 
 			Expect(len(p.PCurrent.Keys())).Should(Equal(1))
 			key, value, ok := p.PCurrent.RemoveOldest()
@@ -163,13 +170,15 @@ var _ = Describe("Provider", func() {
 				Pipeline: p,
 			}
 			go ProviderImpl.Convert()
+			defer ProviderImpl.Stop()
+
 			BlockImpl := ConstructBlock("key", 0)
 			AnotherBlock := ConstructBlock("abc", 1)
 			ThridBlock := ConstructBlocks("key", "abc")
 			p.Comming.Enqueue(BlockImpl)
 			p.Comming.Enqueue(AnotherBlock)
 			p.Comming.Enqueue(ThridBlock)
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(500 * time.Millisecond)
 
 			Expect(len(p.PCurrent.Keys())).Should(Equal(1))
 			Expect(len(p.CCurrent.Keys())).Should(Equal(2))
@@ -210,6 +219,8 @@ var _ = Describe("Provider", func() {
 				Pipeline: p,
 			}
 			go ProviderImpl.Convert()
+			defer ProviderImpl.Stop()
+
 			BlockImpl := ConstructBlock("key", 0)
 			AnotherBlock := ConstructBlock("abc", 1)
 			ThridBlock := ConstructBlocks("key", "abc")
@@ -223,7 +234,7 @@ var _ = Describe("Provider", func() {
 			p.Comming.Enqueue(FourthBlock)
 			p.Comming.Enqueue(FiFthBlock)
 			p.Comming.Enqueue(SixthBlock)
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(500 * time.Millisecond)
 
 			Expect(len(p.PCurrent.Keys())).Should(Equal(3))
 			Expect(len(p.CCurrent.Keys())).Should(Equal(2))
@@ -275,7 +286,8 @@ var _ = Describe("Provider", func() {
 			Expect(node.GetKeys()).Should(Equal("abc"))
 			Expect(key.(string)).Should(Equal("abc"))
 			p.SwitchC()
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(500 * time.Millisecond)
+
 			Expect(p.Output.GetLen()).Should(Equal(1))
 			v, _ = p.Output.Dequeue()
 			Expect(v).Should(Equal(SixthBlock))

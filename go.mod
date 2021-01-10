@@ -8,6 +8,7 @@ require (
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/onsi/ginkgo v1.14.2
 	github.com/onsi/gomega v1.10.4
+	github.com/sirupsen/logrus v1.7.0
 	go.uber.org/goleak v1.1.10
 	golang.org/x/lint v0.0.0-20201208152925-83fdc39ff7b5 // indirect
 	golang.org/x/tools v0.0.0-20201230224404-63754364767c // indirect

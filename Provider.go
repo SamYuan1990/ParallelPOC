@@ -46,14 +46,17 @@ func (impl *ProviderImpl) Convert() {
 				}
 			}
 			if found == 1 {
+				GetLogger().Info("update existing key and node", keyStr, node)
 				impl.Pipeline.PCurrent.Remove(nodeInLRU.GetKeys())
 				nodeInLRU.Add(node)
 				impl.Pipeline.PCurrent.PeekOrAdd(nodeInLRU.MergeKey(keyStr), nodeInLRU)
 			}
 			if found == 0 {
+				GetLogger().Info("add new key", keyStr, node)
 				impl.Pipeline.PCurrent.Add(keyStr, node)
 			}
 			if found > 1 {
+				GetLogger().Info("will hold and waiting for switch")
 				for !impl.Pipeline.SwitchAble() { // hold
 
 				}
@@ -61,6 +64,7 @@ func (impl *ProviderImpl) Convert() {
 				impl.Pipeline.PCurrent.Add(keyStr, node)
 			}
 		}
+		GetLogger().Info("Put V to output queue ", v)
 		impl.Pipeline.Output.Enqueue(v)
 	}
 }

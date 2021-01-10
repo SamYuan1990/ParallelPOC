@@ -48,7 +48,8 @@ func BenchmarkProvider(b *testing.B) {
 		}
 	}()
 	for i := 0; i < b.N; {
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
+
 		v, err := p.Output.Dequeue()
 		if err == nil && v != nil {
 			i++
@@ -92,7 +93,8 @@ func benchmarke2e(concurrent int, b *testing.B) {
 		}
 	}()
 	for i := 0; i < b.N; {
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
+
 		v, err := p.Output.Dequeue()
 		if err == nil && v != nil {
 			for !v.(*BlockImpl).Txs[0].Processed {

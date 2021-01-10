@@ -11,6 +11,7 @@ import (
 
 var _ = Describe("Consumer", func() {
 	It("Basic testing", func() {
+		pipelinepoc.GetLogger().Info("Consumer basic testing")
 		p := &pipelinepoc.Pipeline{}
 		p.Init()
 		ProviderImpl := &pipelinepoc.ProviderImpl{
@@ -35,7 +36,7 @@ var _ = Describe("Consumer", func() {
 		}
 		go c.Consume()
 		p.Comming.Enqueue(BlockImpl)
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
 		Expect(len(p.PCurrent.Keys())).Should(Equal(0))
 		ProviderImpl.Stop()
 		c.Stop()
@@ -44,6 +45,7 @@ var _ = Describe("Consumer", func() {
 		Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
 	})
 	It("Key Merge case 1", func() {
+		pipelinepoc.GetLogger().Info("start Key Merge case 1")
 		p := &pipelinepoc.Pipeline{}
 		p.Init()
 		ProviderImpl := &pipelinepoc.ProviderImpl{
@@ -60,7 +62,7 @@ var _ = Describe("Consumer", func() {
 		AnotherBlock := ConstructBlock("key", 1)
 		p.Comming.Enqueue(BlockImpl)
 		p.Comming.Enqueue(AnotherBlock)
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
 
 		ProviderImpl.Stop()
 		c.Stop()
@@ -73,6 +75,7 @@ var _ = Describe("Consumer", func() {
 	})
 
 	It("Key Merge case 2", func() {
+		pipelinepoc.GetLogger().Info("start Key Merge case 2")
 		p := &pipelinepoc.Pipeline{}
 		p.Init()
 		ProviderImpl := &pipelinepoc.ProviderImpl{
@@ -89,7 +92,8 @@ var _ = Describe("Consumer", func() {
 		AnotherBlock := ConstructBlock("key", 1)
 		p.Comming.Enqueue(BlockImpl)
 		p.Comming.Enqueue(AnotherBlock)
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
+
 		ProviderImpl.Stop()
 		c.Stop()
 
@@ -102,6 +106,7 @@ var _ = Describe("Consumer", func() {
 	})
 
 	It("Key Merge case 3", func() {
+		pipelinepoc.GetLogger().Info("start Key Merge case 3")
 		p := &pipelinepoc.Pipeline{}
 		p.Init()
 		ProviderImpl := &pipelinepoc.ProviderImpl{
@@ -113,12 +118,13 @@ var _ = Describe("Consumer", func() {
 			Pipeline: p,
 			Wg:       wg,
 		}
-		go c.Consume()
 		BlockImpl := ConstructBlock("key", 1)
 		AnotherBlock := ConstructBlocks("key", "abc")
 		p.Comming.Enqueue(BlockImpl)
 		p.Comming.Enqueue(AnotherBlock)
-		time.Sleep(100 * time.Millisecond)
+		go c.Consume()
+		time.Sleep(500 * time.Millisecond)
+
 		ProviderImpl.Stop()
 		c.Stop()
 
@@ -131,6 +137,7 @@ var _ = Describe("Consumer", func() {
 	})
 
 	It("Key Merge case 4", func() {
+		pipelinepoc.GetLogger().Info("start Key Merge case 4")
 		p := &pipelinepoc.Pipeline{}
 		p.Init()
 		ProviderImpl := &pipelinepoc.ProviderImpl{
@@ -143,7 +150,8 @@ var _ = Describe("Consumer", func() {
 		p.Comming.Enqueue(BlockImpl)
 		p.Comming.Enqueue(AnotherBlock)
 		p.Comming.Enqueue(ThridBlock)
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
+
 		ProviderImpl.Stop()
 
 		wg := &sync.WaitGroup{}
@@ -176,6 +184,7 @@ var _ = Describe("Consumer", func() {
 	})
 
 	It("Key Merge case 4 parallel 2", func() {
+		pipelinepoc.GetLogger().Info("start Key Merge case 4 parallel 2")
 		p := &pipelinepoc.Pipeline{}
 		p.Init()
 		ProviderImpl := &pipelinepoc.ProviderImpl{
@@ -188,7 +197,8 @@ var _ = Describe("Consumer", func() {
 		p.Comming.Enqueue(BlockImpl)
 		p.Comming.Enqueue(AnotherBlock)
 		p.Comming.Enqueue(ThridBlock)
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
+
 		ProviderImpl.Stop()
 
 		wg := &sync.WaitGroup{}
@@ -211,7 +221,8 @@ var _ = Describe("Consumer", func() {
 		go Switcher.Switch()
 		go c.Consume()
 		go c1.Consume()
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
+
 		c.Stop()
 		c1.Stop()
 		Switcher.Stop()
@@ -228,6 +239,7 @@ var _ = Describe("Consumer", func() {
 	})
 
 	It("Key Merge case 5 parallel 2", func() {
+		pipelinepoc.GetLogger().Info("start Key Merge case 5 parallel 2")
 		p := &pipelinepoc.Pipeline{}
 		p.Init()
 		ProviderImpl := &pipelinepoc.ProviderImpl{
@@ -252,8 +264,7 @@ var _ = Describe("Consumer", func() {
 		Switcher.AddConsumer(c)
 		Switcher.AddConsumer(c1)
 		go Switcher.Switch()
-		go c.Consume()
-		go c1.Consume()
+
 		BlockImpl := ConstructBlock("key", 0)
 		AnotherBlock := ConstructBlock("abc", 1)
 		ThridBlock := ConstructBlocks("key", "abc")
@@ -267,33 +278,43 @@ var _ = Describe("Consumer", func() {
 		p.Comming.Enqueue(FourthBlock)
 		p.Comming.Enqueue(FiFthBlock)
 		p.Comming.Enqueue(SixthBlock)
-		time.Sleep(100 * time.Millisecond)
+		go c.Consume()
+		go c1.Consume()
+		time.Sleep(500 * time.Millisecond)
+
 		ProviderImpl.Stop()
 		c.Stop()
 		c1.Stop()
 		Switcher.Stop()
 
-		v, _ := p.Output.Dequeue()
-		Expect(v).Should(Equal(BlockImpl))
-		Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
-		v, _ = p.Output.Dequeue()
-		Expect(v).Should(Equal(AnotherBlock))
-		Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
-		v, _ = p.Output.Dequeue()
-		Expect(v).Should(Equal(ThridBlock))
-		Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
-		v, _ = p.Output.Dequeue()
-		Expect(v).Should(Equal(FourthBlock))
-		Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
-		v, _ = p.Output.Dequeue()
-		Expect(v).Should(Equal(FiFthBlock))
-		Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
-		v, _ = p.Output.Dequeue()
-		Expect(v).Should(Equal(SixthBlock))
-		Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
+		for v, err := p.Output.Dequeue(); err != nil && v != nil; {
+			Expect(v).Should(Equal(BlockImpl))
+			Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
+		}
+		for v, err := p.Output.Dequeue(); err != nil && v != nil; {
+			Expect(v).Should(Equal(AnotherBlock))
+			Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
+		}
+		for v, err := p.Output.Dequeue(); err != nil && v != nil; {
+			Expect(v).Should(Equal(ThridBlock))
+			Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
+		}
+		for v, err := p.Output.Dequeue(); err != nil && v != nil; {
+			Expect(v).Should(Equal(FourthBlock))
+			Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
+		}
+		for v, err := p.Output.Dequeue(); err != nil && v != nil; {
+			Expect(v).Should(Equal(FiFthBlock))
+			Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
+		}
+		for v, err := p.Output.Dequeue(); err != nil && v != nil; {
+			Expect(v).Should(Equal(SixthBlock))
+			Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
+		}
 	})
 
 	It("Key Merge case 5", func() {
+		pipelinepoc.GetLogger().Info("start Key Merge case 5")
 		p := &pipelinepoc.Pipeline{}
 		p.Init()
 		ProviderImpl := &pipelinepoc.ProviderImpl{
@@ -313,7 +334,6 @@ var _ = Describe("Consumer", func() {
 		}
 		Switcher.AddConsumer(c)
 		go Switcher.Switch()
-		go c.Consume()
 		BlockImpl := ConstructBlock("key", 0)
 		AnotherBlock := ConstructBlock("abc", 1)
 		ThridBlock := ConstructBlocks("key", "abc")
@@ -327,28 +347,36 @@ var _ = Describe("Consumer", func() {
 		p.Comming.Enqueue(FourthBlock)
 		p.Comming.Enqueue(FiFthBlock)
 		p.Comming.Enqueue(SixthBlock)
-		time.Sleep(100 * time.Millisecond)
+		go c.Consume()
+		time.Sleep(500 * time.Millisecond)
+
 		defer ProviderImpl.Stop()
 		defer c.Stop()
 		defer Switcher.Stop()
 
-		v, _ := p.Output.Dequeue()
-		Expect(v).Should(Equal(BlockImpl))
-		Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
-		v, _ = p.Output.Dequeue()
-		Expect(v).Should(Equal(AnotherBlock))
-		Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
-		v, _ = p.Output.Dequeue()
-		Expect(v).Should(Equal(ThridBlock))
-		Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
-		v, _ = p.Output.Dequeue()
-		Expect(v).Should(Equal(FourthBlock))
-		Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
-		v, _ = p.Output.Dequeue()
-		Expect(v).Should(Equal(FiFthBlock))
-		Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
-		v, _ = p.Output.Dequeue()
-		Expect(v).Should(Equal(SixthBlock))
-		Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
+		for v, err := p.Output.Dequeue(); err != nil; {
+			Expect(v).Should(Equal(BlockImpl))
+			Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
+		}
+		for v, err := p.Output.Dequeue(); err != nil; {
+			Expect(v).Should(Equal(AnotherBlock))
+			Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
+		}
+		for v, err := p.Output.Dequeue(); err != nil; {
+			Expect(v).Should(Equal(ThridBlock))
+			Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
+		}
+		for v, err := p.Output.Dequeue(); err != nil; {
+			Expect(v).Should(Equal(FourthBlock))
+			Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
+		}
+		for v, err := p.Output.Dequeue(); err != nil; {
+			Expect(v).Should(Equal(FiFthBlock))
+			Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
+		}
+		for v, err := p.Output.Dequeue(); err != nil; {
+			Expect(v).Should(Equal(SixthBlock))
+			Expect(v.(*pipelinepoc.BlockImpl).Txs[0].Processed).Should(BeTrue())
+		}
 	})
 })
