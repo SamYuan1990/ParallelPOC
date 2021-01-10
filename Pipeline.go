@@ -56,6 +56,7 @@ func (p *Pipeline) Init() error {
 func (p *Pipeline) SwitchP() {
 	p.lock.Lock()
 	defer p.lock.Unlock()
+	GetLogger().Info("Switch P")
 	tmp := p.PCurrent
 	p.PCurrent = p.PNext
 	p.PNext = tmp
@@ -64,6 +65,7 @@ func (p *Pipeline) SwitchP() {
 func (p *Pipeline) SwitchC() {
 	p.lock.Lock()
 	defer p.lock.Unlock()
+	GetLogger().Info("Switch C")
 	//if !p.SwitchAble() {
 	tmp := p.CCurrent
 	p.CCurrent = p.CNext

@@ -24,11 +24,12 @@ func (s *Switcher) AddConsumer(c *Consumer) {
 func (s *Switcher) Switch() {
 	for !s.stopped {
 		s.Wg.Wait()
+		GetLogger().Info("switch by switcher")
 		s.Pipeline.SwitchC()
+		s.Wg.Add(s.Count)
 		for _, consumer := range s.Consumers {
 			consumer.Resume()
 		}
-		s.Wg.Add(s.Count)
 	}
 }
 
